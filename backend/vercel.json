@@ -1,10 +1,6 @@
 {
-  "functions": {
-    "entry.js": {
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/entry" }
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/api/index" }
   ]
 }

@@ -1,6 +1,6 @@
 import "dotenv/config";
-import app from "./src/app.js";
-import connectDB from "./src/config/database.js";
+import app from "../src/app.js";
+import connectDB from "../src/config/database.js";
 
 // Vercel calls this handler on every request. We ensure the DB
 // connection is established (or reused from cache) before passing
