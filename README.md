@@ -1,7 +1,6 @@
 # Parking Management System
 
-Full-stack parking management application built for an IT Developer portfolio.
-
+Full-stack parking management application 
 ## 🚀 Live Demo
 - **App:** https://parking-management-system-wxkq.vercel.app
 - **API:** https://parking-management-system-naufal17.vercel.app/api/health
