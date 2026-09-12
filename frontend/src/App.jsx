@@ -17,7 +17,7 @@ function formatDate(value) {
   return value ? new Date(value).toLocaleString("id-ID") : "-";
 }
 
-function Login({ onLogin }) {
+function Login({ onLogin, onSwitchToRegister }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
@@ -62,9 +62,127 @@ function Login({ onLogin }) {
         />
 
         <button className="primary full">Login</button>
-        <small>Daftar melalui POST /api/auth/register untuk membuat akun pertama.</small>
+        <small>
+          Belum punya akun?{" "}
+          <a href="#" onClick={e => { e.preventDefault(); onSwitchToRegister(); }}>
+            Daftar di sini
+          </a>
+        </small>
       </form>
     </div>
+  );
+}
+
+function Register({ onRegistered, onSwitchToLogin }) {
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+
+    if (form.password.length < 6) {
+      setError("Password minimal 6 karakter");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("Konfirmasi password tidak cocok");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data } = await api.post("/auth/register", {
+        name: form.name,
+        email: form.email,
+        password: form.password
+      });
+      localStorage.setItem("parking_token", data.token);
+      localStorage.setItem("parking_user", JSON.stringify(data.user));
+      onRegistered(data.user);
+    } catch (err) {
+      setError(err.response?.data?.message || "Registrasi gagal");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="login-page">
+      <form className="login-card" onSubmit={submit}>
+        <div className="brand-mark"><CircleParking size={30} /></div>
+        <h1>Buat Akun</h1>
+        <p>Daftar untuk mulai mengelola area parkir.</p>
+
+        {error && <div className="alert error">{error}</div>}
+
+        <label>Nama Lengkap</label>
+        <input
+          required
+          value={form.name}
+          onChange={e => setForm({ ...form, name: e.target.value })}
+          placeholder="Nama Anda"
+        />
+
+        <label>Email</label>
+        <input
+          type="email"
+          required
+          value={form.email}
+          onChange={e => setForm({ ...form, email: e.target.value })}
+          placeholder="admin@example.com"
+        />
+
+        <label>Password</label>
+        <input
+          type="password"
+          required
+          value={form.password}
+          onChange={e => setForm({ ...form, password: e.target.value })}
+          placeholder="Minimal 6 karakter"
+        />
+
+        <label>Konfirmasi Password</label>
+        <input
+          type="password"
+          required
+          value={form.confirmPassword}
+          onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
+          placeholder="Ulangi password"
+        />
+
+        <button className="primary full" disabled={loading}>
+          {loading ? "Memproses..." : "Daftar"}
+        </button>
+        <small>
+          Sudah punya akun?{" "}
+          <a href="#" onClick={e => { e.preventDefault(); onSwitchToLogin(); }}>
+            Masuk di sini
+          </a>
+        </small>
+      </form>
+    </div>
+  );
+}
+
+function AuthPage({ onLogin }) {
+  const [view, setView] = useState("login");
+
+  if (view === "register") {
+    return (
+      <Register
+        onRegistered={onLogin}
+        onSwitchToLogin={() => setView("login")}
+      />
+    );
+  }
+
+  return (
+    <Login
+      onLogin={onLogin}
+      onSwitchToRegister={() => setView("register")}
+    />
   );
 }
 
@@ -399,7 +517,7 @@ export default function App() {
     setUser(null);
   }
 
-  if (!user) return <Login onLogin={setUser}/>;
+  if (!user) return <AuthPage onLogin={setUser}/>;
 
   const nav = [
     ["dashboard", "Dashboard", LayoutDashboard],
