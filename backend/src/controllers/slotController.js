@@ -6,6 +6,7 @@ export async function getSlots(req, res) {
   if (req.query.type) filter.type = req.query.type;
 
   const slots = await ParkingSlot.find(filter).sort({ slotNumber: 1 });
+  console.log("Jumlah slot ditemukan:", slots.length);
   res.json(slots);
 }
 
@@ -49,4 +50,28 @@ export async function deleteSlot(req, res) {
 
   await slot.deleteOne();
   res.json({ message: "Slot deleted" });
+}
+
+export async function seedSlots(req, res) {
+  const slots = [];
+  for (let i = 1; i <= 20; i++) {
+    slots.push({
+      slotNumber: `A${String(i).padStart(2, "0")}`,
+      type: i <= 15 ? "car" : "motorcycle",
+      status: "available"
+    });
+  }
+
+  let created = 0;
+  for (const slot of slots) {
+    const result = await ParkingSlot.updateOne(
+      { slotNumber: slot.slotNumber },
+      { $setOnInsert: slot },
+      { upsert: true }
+    );
+    if (result.upsertedCount) created++;
+  }
+
+  const total = await ParkingSlot.countDocuments();
+  res.json({ message: "Seed selesai", slotsBaruDitambahkan: created, totalSlotSekarang: total });
 }

@@ -1,6 +1,17 @@
 # Parking Management System
 
-Full-stack parking management application built for an IT Developer portfolio.
+Full-stack parking management application 
+## 🚀 Live Demo
+- **App:** https://parking-management-system-wxkq.vercel.app
+- **API:** https://parking-management-system-naufal17.vercel.app/api/health
+
+**Demo credentials:**
+- Email: `admin@parking.com`
+- Password: `admin123`
+
+> ⚠️ Note: the backend runs on Vercel's free serverless tier, so the first
+> request after a period of inactivity may take a few seconds to respond
+> while the function "cold starts." Subsequent requests are fast.
 
 ## Stack
 - Frontend: React + Vite
@@ -94,3 +105,17 @@ npm run seed
 ```
 
 This creates slots A01-A20.
+
+## Deployment
+This project is deployed using a fully free stack:
+- **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas) (M0 free tier)
+- **Backend:** [Vercel](https://vercel.com) as a serverless function (`backend/api/index.js`)
+- **Frontend:** [Vercel](https://vercel.com) (static Vite build)
+
+Environment variables required in production:
+| Variable | Where | Example |
+|---|---|---|
+| `MONGODB_URI` | Backend project | `mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/parking_management` |
+| `JWT_SECRET` | Backend project | any long random string |
+| `CLIENT_URL` | Backend project | the deployed frontend URL (for CORS) |
+| `VITE_API_URL` | Frontend project | the deployed backend URL + `/api` |
